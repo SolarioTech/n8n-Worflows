@@ -17,7 +17,7 @@ Welcome to the n8n Workflows Repository! This collection contains 7 production-r
 
 ## 🤖 About n8n
 
-**n8n** (pronounced "n-eight-n") is a powerful, open-source workflow automation tool that allows you to connect various apps and services to automate repetitive tasks without writing code. It's an excellent alternative to tools like Zapier, Make (formerly Integr omat), or Microsoft Power Automate.
+**n8n** (pronounced "n-eight-n") is a powerful, open-source workflow automation tool that allows you to connect various apps and services to automate repetitive tasks without writing code. It's an excellent alternative to tools like Zapier, Make (formerly Integromat), or Microsoft Power Automate.
 
 ### Why n8n?
 
