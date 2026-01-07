@@ -1,0 +1,300 @@
+{
+  "name": "Automated Weekly Project Status Report to Leadership",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 18 * * 5"
+            }
+          ]
+        }
+      },
+      "id": "2daba15b-79b0-4aed-99a4-5cdadca51962",
+      "name": "Every Friday 6 PM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -5232,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "spreadsheetId",
+              "value": "1LB6v8DkZF0KBL0LLQ-5iWfr_wqK8_fmB9PED4ITUwwA",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "sheetName",
+              "value": "Projects",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "leadershipEmail",
+              "value": "nikhilsiwan77@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "pmoEmail",
+              "value": "voidman.nikk@gmail.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4e467c76-53e2-465a-aac7-44c1e4869cbd",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4784,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1LB6v8DkZF0KBL0LLQ-5iWfr_wqK8_fmB9PED4ITUwwA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LB6v8DkZF0KBL0LLQ-5iWfr_wqK8_fmB9PED4ITUwwA/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "23d6930c-f0b6-43cb-b225-d2e6676dd791",
+      "name": "Fetch Project Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -5008,
+        1136
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8TGTyiM0cUmgssJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('Fetch Project Data').all().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "c1874f39-1b0f-4925-8e90-1bcac08ed148",
+      "name": "Check if Data Empty",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -4784,
+        1232
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').first().json.leadershipEmail }}",
+        "subject": "={{ 'Weekly Project Status Report - ' + new Date().toLocaleDateString() }}",
+        "emailType": "text",
+        "message": "={{ $('Generate Summary Text').first().json.summaryText }}",
+        "options": {}
+      },
+      "id": "5bde30b5-9d82-439e-81b2-4ed0982b737a",
+      "name": "Email Leadership",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -4112,
+        1136
+      ],
+      "webhookId": "bee2dbfc-3410-4dcd-b111-ff075693f295",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').first().json.pmoEmail }}",
+        "subject": "ALERT: Empty Project Data - Weekly Report Failed",
+        "emailType": "text",
+        "message": "The weekly project status report could not be generated because no project data was found in the spreadsheet. Please check the data source.",
+        "options": {}
+      },
+      "id": "f6095bcc-f806-4231-8ff5-4f3c3d04311b",
+      "name": "Alert PMO - Empty Data",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -4560,
+        1328
+      ],
+      "webhookId": "e568b318-aae2-4bcc-ad23-e53f2b6f6993",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate weekly project status summary from metrics data\nconst metricsData = $input.all();\n\n// Extract metrics from the input\nlet totalProjects = 0;\nlet completedProjects = 0;\nlet delayedProjects = 0;\nlet averageCompletion = 0;\n\n// Process the metrics data\nif (metricsData && metricsData.length > 0) {\n  const metrics = metricsData[0].json;\n  \n  // Extract metrics using correct field names from Calculate Project Metrics node\n  totalProjects = metrics['count_Task_Completion_(%)'] || 0;\n  delayedProjects = metrics['count_Is_Delayed'] || 0;\n  averageCompletion = Math.round(metrics['average_Task_Completion_(%)'] || 0);\n  \n  // Calculate completed projects (those with Task Completion >= 95)\n  // Access the original data to count completed projects\n  const fetchData = $('Fetch Project Data').all();\n  completedProjects = fetchData.filter(item => {\n    const taskCompletion = item.json['Task Completion (%)'];\n    return taskCompletion !== null && taskCompletion !== undefined && taskCompletion >= 95;\n  }).length;\n}\n\n// Generate the summary text\nconst summaryText = `Weekly Project Status Report\n\n📊 Project Overview:\n- Total Projects: ${totalProjects}\n- Completed Projects: ${completedProjects}\n- Delayed Projects: ${delayedProjects}\n- Overall Completion: ${averageCompletion}%\n\n${delayedProjects > 0 ? '⚠️ Attention Required: ' + delayedProjects + ' project(s) are currently delayed.' : '✅ All projects are on track.'}\n\nThis is an automated weekly status report generated on ${new Date().toLocaleDateString()}.`;\n\n// Return the summary with all metric fields\nreturn [{\n  json: {\n    summaryText: summaryText,\n    totalProjects: totalProjects,\n    completedProjects: completedProjects,\n    delayedProjects: delayedProjects,\n    averageCompletion: averageCompletion,\n    reportDate: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "d77f8221-9730-4b09-b85f-27a954ea838f",
+      "name": "Generate Summary Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4336,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "Task Completion (%)"
+            },
+            {
+              "field": "Is Delayed"
+            },
+            {
+              "aggregation": "average",
+              "field": "Task Completion (%)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "77a20199-e5c8-4fa8-b130-3bb00ef4423a",
+      "name": "Calculate Project Metrics",
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        -4560,
+        1136
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every Friday 6 PM": {
+      "main": [
+        [
+          {
+            "node": "Fetch Project Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Project Data": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check if Data Empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Data Empty": {
+      "main": [
+        [
+          {
+            "node": "Calculate Project Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alert PMO - Empty Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Project Metrics": {
+      "main": [
+        [
+          {
+            "node": "Generate Summary Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Summary Text": {
+      "main": [
+        [
+          {
+            "node": "Email Leadership",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "d75faec6-5c85-4ba1-8332-332c4a4de39e",
+  "meta": {
+    "instanceId": "a6e07f0cade65ae3b897c80688dbb4ced8b7ecdd9a4ffd6857ac2c42cfa06487"
+  },
+  "id": "67DWGiDEkgnWAvpi",
+  "tags": []
+}

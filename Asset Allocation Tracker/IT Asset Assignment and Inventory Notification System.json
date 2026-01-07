@@ -1,0 +1,492 @@
+{
+  "name": "IT Asset Assignment and Inventory Notification System",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').item.json.adminEmail }}",
+        "subject": "=ALERT: Duplicate Asset ID Detected - {{ $('Workflow Configuration').item.json.assetID }}",
+        "message": "=<h2>Duplicate Asset ID Alert</h2><p>A duplicate Asset ID has been detected in the system:</p><ul><li><strong>Asset ID:</strong> {{ $('Workflow Configuration').item.json.assetID }}</li><li><strong>Asset Type:</strong> {{ $('Workflow Configuration').item.json.assetType }}</li><li><strong>Employee Name:</strong> {{ $('Workflow Configuration').item.json.employeeName }}</li><li><strong>Assignment Date:</strong> {{ $('Workflow Configuration').item.json.assignmentDate }}</li></ul><p>Please review the Asset Inventory immediately.</p>",
+        "options": {}
+      },
+      "id": "c28a6920-1c50-47a5-8193-e2b36a5a38d7",
+      "name": "Alert Admin - Duplicate Asset",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -5312,
+        928
+      ],
+      "webhookId": "4f40db8e-153e-42bf-a69a-2c20da76d543",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').item.json.itTeamEmail }}",
+        "subject": "=New Asset Assignment - {{ $('Workflow Configuration').item.json.assetType }} to {{ $('Workflow Configuration').item.json.employeeName }}",
+        "message": "=<h2>New Asset Assignment Notification</h2><p>A new asset has been assigned:</p><ul><li><strong>Employee Name:</strong> {{ $('Workflow Configuration').item.json.employeeName }}</li><li><strong>Asset Type:</strong> {{ $('Workflow Configuration').item.json.assetType }}</li><li><strong>Asset ID:</strong> {{ $('Workflow Configuration').item.json.assetID }}</li><li><strong>Assignment Date:</strong> {{ $('Workflow Configuration').item.json.assignmentDate }}</li></ul><p>The Asset Inventory has been updated and the employee has been notified.</p>",
+        "options": {}
+      },
+      "id": "43f5df8e-07fa-4844-9650-50c25641ac31",
+      "name": "Notify IT Team",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -4864,
+        1120
+      ],
+      "webhookId": "80b7b307-848e-4492-9f02-ea1d2cefbeb0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').item.json.employeeEmail }}",
+        "subject": "=Asset Assignment Confirmation - {{ $('Workflow Configuration').item.json.assetType }}",
+        "message": "=<h2>Asset Assignment Confirmation</h2><p>Dear {{ $('Workflow Configuration').item.json.employeeName }},</p><p>This email confirms that the following asset has been assigned to you:</p><ul><li><strong>Asset Type:</strong> {{ $('Workflow Configuration').item.json.assetType }}</li><li><strong>Asset ID:</strong> {{ $('Workflow Configuration').item.json.assetID }}</li><li><strong>Assignment Date:</strong> {{ $('Workflow Configuration').item.json.assignmentDate }}</li></ul><p>Please take good care of this asset and report any issues to the IT team.</p><p>Best regards,<br>IT Department</p>",
+        "options": {}
+      },
+      "id": "b787b5aa-17ba-4d7c-9123-6011ffdea7c9",
+      "name": "Send Confirmation to Employee",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -5088,
+        1120
+      ],
+      "webhookId": "411772c5-c7f5-4111-8c17-2eea81286726",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1BpTA0mddXJvuPsuII-PLorMR0l_cSo9dfSJ0eUcWcVA",
+          "mode": "list",
+          "cachedResultName": "Asset Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BpTA0mddXJvuPsuII-PLorMR0l_cSo9dfSJ0eUcWcVA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BpTA0mddXJvuPsuII-PLorMR0l_cSo9dfSJ0eUcWcVA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Asset ID": "={{ $('Workflow Configuration').item.json.assetID }}",
+            "Asset Type": "={{ $('Workflow Configuration').item.json.assetType }}",
+            "Assigned To": "={{ $('Workflow Configuration').item.json.employeeName }}",
+            "Status": "Active",
+            "Assignment Date": "={{ $('Workflow Configuration').item.json.assignmentDate }}"
+          },
+          "matchingColumns": [
+            "Asset ID"
+          ],
+          "schema": [
+            {
+              "id": "Asset ID",
+              "displayName": "Asset ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Asset Type",
+              "displayName": "Asset Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Assigned To",
+              "displayName": "Assigned To",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Assignment Date",
+              "displayName": "Assignment Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a25e08a2-532f-48d7-b5b7-1e6a50e07163",
+      "name": "Update Asset Inventory Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -5312,
+        1120
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8TGTyiM0cUmgssJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BpTA0mddXJvuPsuII-PLorMR0l_cSo9dfSJ0eUcWcVA",
+          "mode": "list",
+          "cachedResultName": "Asset Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BpTA0mddXJvuPsuII-PLorMR0l_cSo9dfSJ0eUcWcVA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BpTA0mddXJvuPsuII-PLorMR0l_cSo9dfSJ0eUcWcVA/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Asset ID",
+              "lookupValue": "={{ $json.assetID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fcac82ae-64c3-4e9c-b7b0-4f738f4d476d",
+      "name": "Check for Duplicate Asset ID",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -5760,
+        1024
+      ],
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8TGTyiM0cUmgssJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "employeeName",
+              "value": "={{ $json.employeeName || $json['Employee Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "assetType",
+              "value": "={{ $json.assetType || $json['Asset Type'] }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "assetID",
+              "value": "={{ $json.assetID || $json['Asset ID'] }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "assignmentDate",
+              "value": "={{ $json['Assignment Date'] }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "adminEmail",
+              "value": "developer.nikk@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "id-6",
+              "name": "itTeamEmail",
+              "value": "developer.nikk@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "id-7",
+              "name": "employeeEmail",
+              "value": "={{ $json.employeeEmail || $json['Employee Email'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1efc5ae8-1193-4862-a671-e5b7aaa5d700",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6208,
+        1024
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1tsL73rddLGEzOzBrgvVgQP8kPGzbLRspv25syQp31-I",
+          "mode": "list",
+          "cachedResultName": "Assest Allocation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tsL73rddLGEzOzBrgvVgQP8kPGzbLRspv25syQp31-I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tsL73rddLGEzOzBrgvVgQP8kPGzbLRspv25syQp31-I/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "415c9a9a-1e0b-4987-ac38-8d04e3e83acb",
+      "name": "New Asset Assignment Row",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -6432,
+        1024
+      ],
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "4qxKDFstxlLPVWj2",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "886aac7b-3845-4680-883f-f8d8c95f1791",
+              "leftValue": "={{ $json.assetID }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -5984,
+        1024
+      ],
+      "id": "5dc0db19-95e8-41b5-ac97-669158ce4170",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.Status }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "318cc6fb-891a-43b4-82cb-3933dcc19c8d",
+              "leftValue": "={{ Object.keys($json)}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "795e1584-9e27-4a7e-b326-d249f588446f",
+      "name": "Is Duplicate Asset?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5584,
+        1024
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Send Confirmation to Employee": {
+      "main": [
+        [
+          {
+            "node": "Notify IT Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Asset Inventory Sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation to Employee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Asset Assignment Row": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Duplicate Asset?": {
+      "main": [
+        [
+          {
+            "node": "Alert Admin - Duplicate Asset",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Asset Inventory Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Check for Duplicate Asset ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Duplicate Asset ID": {
+      "main": [
+        [
+          {
+            "node": "Is Duplicate Asset?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "0685654d-3953-43bb-bc46-4d025b776b25",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6e07f0cade65ae3b897c80688dbb4ced8b7ecdd9a4ffd6857ac2c42cfa06487"
+  },
+  "id": "lZqEcSI6njsTUyQQ",
+  "tags": []
+}

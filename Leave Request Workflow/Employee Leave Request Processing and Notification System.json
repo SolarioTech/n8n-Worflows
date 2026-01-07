@@ -1,0 +1,368 @@
+{
+  "name": "Employee Leave Request Processing and Notification System",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "employeeName",
+              "value": "={{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "56202682-5e1f-4d50-a562-21ad69b43ca0",
+              "name": "Email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "fromDate",
+              "value": "={{ $json['Leave From Date(s)'] }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "toDate",
+              "value": "={{ $json['Leave To Date(s)'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ec104750-71a0-436b-bae7-af5be9fef137",
+              "name": "Full Day/Half Day",
+              "value": "={{ $json['Full Day/Half Day'] }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "leaveType",
+              "value": "={{ $json['Type of leave'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3da1cb33-7056-4fbe-b36b-c7b7e0a7ae07",
+              "name": "Reason",
+              "value": "={{ $json.Reason }}",
+              "type": "string"
+            },
+            {
+              "id": "id-6",
+              "name": "submittedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "id-7",
+              "name": "status",
+              "value": "Pending",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3e86f168-4691-433b-a7b6-a7f8abb445f5",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3808,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1REuKqRBTGZh3DLcSEA0Lx86f3nWoYeWKHifLi0aYDQY",
+          "mode": "list",
+          "cachedResultName": "Leave Request",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1REuKqRBTGZh3DLcSEA0Lx86f3nWoYeWKHifLi0aYDQY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1REuKqRBTGZh3DLcSEA0Lx86f3nWoYeWKHifLi0aYDQY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Employee Name": "={{ $json.employeeName }}",
+            "Leave Type": "={{ $json.leaveType }}",
+            "Reason": "={{ $json.Reason }}",
+            "From Date": "={{ $json.fromDate }}",
+            "To Date": "={{ $json.toDate }}",
+            "Status": "Approved",
+            "Employee Email": "={{ $json.Email }}"
+          },
+          "matchingColumns": [
+            "Employee Name"
+          ],
+          "schema": [
+            {
+              "id": "Employee Name",
+              "displayName": "Employee Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee Email",
+              "displayName": "Employee Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Leave Type",
+              "displayName": "Leave Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "From Date",
+              "displayName": "From Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "To Date",
+              "displayName": "To Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "eb743c66-8542-49fa-bd4e-b1e4707824c7",
+      "name": "Store in Leave Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3584,
+        1344
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8TGTyiM0cUmgssJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "voidman.nikk@gmail.com",
+        "subject": "={{ 'New Leave Request: ' + $('Workflow Configuration').item.json.employeeName }}",
+        "message": "={{ '<h2>New Leave Request Submitted</h2><p><strong>Employee:</strong> ' + $('Workflow Configuration').item.json.employeeName + '</p><p><strong>Leave Type:</strong> ' + $('Workflow Configuration').item.json.leaveType + '</p><p><strong>From:</strong> ' + $('Workflow Configuration').item.json.fromDate + '</p><p><strong>To:</strong> ' + $('Workflow Configuration').item.json.toDate + '</p><p><strong>Reason:</strong> ' + $json.Reason + '</p><p><strong>Status:</strong> ' + $json.Status +'</p>' }}",
+        "options": {}
+      },
+      "id": "7eb77b0b-350f-492a-8bd8-7b8b3c6c7d78",
+      "name": "Send Email to HR",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -3328,
+        1344
+      ],
+      "webhookId": "21fd1a95-4cb9-4101-8c7c-7ad99d7720ad",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').item.json.Email }}",
+        "subject": "Leave Request Confirmation",
+        "message": "={{ \n  '<h2>Leave Request Approved</h2>' +\n  '<p>Dear ' + $('Workflow Configuration').item.json.employeeName + ',</p>' +\n  '<p>We are pleased to inform you that your leave request has been <strong>approved</strong>.</p>' +\n  '<p><strong>Leave Type:</strong> ' + $('Workflow Configuration').item.json.leaveType + '</p>' +\n  '<p><strong>From:</strong> ' + $('Workflow Configuration').item.json.fromDate + '</p>' +\n  '<p><strong>To:</strong> ' + $('Workflow Configuration').item.json.toDate + '</p>' +\n  '<p><strong>Reason:</strong> ' + $('Workflow Configuration').item.json.Reason + '</p>' +\n  '<p>Please ensure all handovers are completed before your leave period begins.</p>' +\n  '<p>Enjoy your time off!</p>' +\n  '<p>Best regards,<br>HR Team</p>'\n}}\n",
+        "options": {}
+      },
+      "id": "1ba5bf51-0b61-4559-92ba-6281b554ff86",
+      "name": "Send Confirmation to Employee",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -3072,
+        1344
+      ],
+      "webhookId": "a8d7fd29-0753-49aa-b84c-a1664fb03a2d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "<__PLACEHOLDER_VALUE__ADMIN_EMAIL__>",
+        "subject": "ERROR: Leave Request Sheet Update Failed",
+        "message": "={{ '<h2>Leave Request Processing Error</h2><p>Failed to update the Leave Requests sheet.</p><p><strong>Employee:</strong> ' + $('Workflow Configuration').item.json.employeeName + '</p><p><strong>Leave Type:</strong> ' + $('Workflow Configuration').item.json.leaveType + '</p><p><strong>From:</strong> ' + $('Workflow Configuration').item.json.fromDate + '</p><p><strong>To:</strong> ' + $('Workflow Configuration').item.json.toDate + '</p><p><strong>Error Details:</strong> Please check the workflow execution logs.</p>' }}",
+        "options": {}
+      },
+      "id": "b955922d-0220-4158-80c8-c4827391b98f",
+      "name": "Email Admin on Error",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -3584,
+        1568
+      ],
+      "webhookId": "c036b471-bc89-4a4b-b602-ac94579581ef",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1NJ0pRb3zf6akWoRxHDXNC9R7N9mz-t8VB36dh-SQwdA",
+          "mode": "list",
+          "cachedResultName": "Leave Form Response",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NJ0pRb3zf6akWoRxHDXNC9R7N9mz-t8VB36dh-SQwdA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 985177673,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NJ0pRb3zf6akWoRxHDXNC9R7N9mz-t8VB36dh-SQwdA/edit#gid=985177673"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -4032,
+        1344
+      ],
+      "id": "d3c370b6-65ea-4a6c-ac05-95223d9bd8b9",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "4qxKDFstxlLPVWj2",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Store in Leave Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store in Leave Sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Email to HR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to HR": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation to Employee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "c7d3373c-d576-4408-92a5-91a8d0599ccc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6e07f0cade65ae3b897c80688dbb4ced8b7ecdd9a4ffd6857ac2c42cfa06487"
+  },
+  "id": "7Id3Z39IJJssNDgc",
+  "tags": []
+}

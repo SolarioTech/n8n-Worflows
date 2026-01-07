@@ -1,0 +1,530 @@
+{
+  "name": "Automated Employee Onboarding Communication and IT Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1ecjVUmaGdW67ib9Ma839h8CTYdym2JQ1y1ZcLWBLdlg",
+          "mode": "list",
+          "cachedResultName": "Employee Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ecjVUmaGdW67ib9Ma839h8CTYdym2JQ1y1ZcLWBLdlg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ecjVUmaGdW67ib9Ma839h8CTYdym2JQ1y1ZcLWBLdlg/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "5f7b92b6-ae01-45f4-a28b-9be06c8b742b",
+      "name": "Employee Status Change Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        7072,
+        2576
+      ],
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "4qxKDFstxlLPVWj2",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "name",
+              "value": "={{ $json.Name || 'New Employee' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "email",
+              "value": "={{ $json.Email || 'developer.nikk@gmail.com' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "doj",
+              "value": "={{ $json.DOJ || 'TBD' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "department",
+              "value": "={{ $json.Department || 'General' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "status",
+              "value": "={{ $json.Status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "390e4237-db06-4128-866e-21e39381e438",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7520,
+        2576
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "Joined",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7c469136-092d-4bc8-bf7d-bfda066b15e1",
+      "name": "Check If Status = Joined",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        7744,
+        2576
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Welcome to the Team!",
+        "message": "=Hi <b>{{ $json.name }}</b>,<br><br>\n\nWelcome to the team!<br><br>\n\nWe are excited to have you join us in the {{ $json.department }} department on\n{{ $json.doj}}.<br><br>\n\nYour onboarding process has been initiated and our IT team has been notified to set up your accounts and equipment.<br><br>\n\nIf you have any questions, please don't hesitate to reach out.<br><br>\n\nBest regards,<br>\n<b>HR Team</b>\n",
+        "options": {}
+      },
+      "id": "b4a8db75-e529-4bc6-a695-2d650d64107e",
+      "name": "Send Welcome Email to Employee",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        7968,
+        2672
+      ],
+      "webhookId": "18ac113c-402a-424c-b38e-df2ad8136992",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#it-notifications"
+        },
+        "text": "=🆕 New Employee Onboarding Alert\n\n*Name:* {{ $json.name }}\n*Email:* {{ $json.email }}\n*Department:* {{ $json.department }}\n*Start Date:* {{ $json.doj }}\n\nPlease prepare:\n• Email account setup\n• Hardware provisioning\n• Access credentials\n• Software licenses",
+        "otherOptions": {}
+      },
+      "id": "6ed6e026-ee14-49c1-8374-cf507f7dbe0a",
+      "name": "Notify IT Team on Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        7968,
+        2480
+      ],
+      "webhookId": "6c89d04b-fe10-4db4-a2b3-4673cba6caa1",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "NQnsC2ktx7sqiIQn",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "it-team@company.com",
+        "subject": "URGENT: New Employee Onboarding - Slack Notification Failed",
+        "message": "=Hi IT Team,\n\nThis is an automated fallback notification. The Slack notification failed, but a new employee has joined:\n\n*Employee Details:*\nName: {{ $('Workflow Configuration').item.json.name }}\nEmail: {{ $('Workflow Configuration').item.json.email }}\nDepartment: {{ $('Workflow Configuration').item.json.department }}\nStart Date: {{ $('Workflow Configuration').item.json.doj }}\n\nPlease proceed with onboarding setup:\n- Email account creation\n- Hardware provisioning\n- Access credentials\n- Software licenses\n\nNote: Please check Slack integration.\n\nBest regards,\nAutomated HR System",
+        "options": {}
+      },
+      "id": "a79ece8e-d2ad-4bcc-8b32-a2a2efc45899",
+      "name": "Fallback Email to IT Team",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        8640,
+        2672
+      ],
+      "webhookId": "af32541f-8a13-4dd6-a7b0-c272252f2e56",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1ecjVUmaGdW67ib9Ma839h8CTYdym2JQ1y1ZcLWBLdlg",
+          "mode": "list",
+          "cachedResultName": "Employee Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ecjVUmaGdW67ib9Ma839h8CTYdym2JQ1y1ZcLWBLdlg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ecjVUmaGdW67ib9Ma839h8CTYdym2JQ1y1ZcLWBLdlg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Workflow Configuration').item.json.name }}",
+            "Email Status": "SENT",
+            "Slack Status": "SENT"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DOJ",
+              "displayName": "DOJ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Notified",
+              "displayName": "Notified",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Status",
+              "displayName": "Email Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Slack Status",
+              "displayName": "Slack Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "42d995b8-b8d1-4651-b6c4-3646c24fa6ee",
+      "name": "Add Onboarding Checklist Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        8640,
+        2480
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8TGTyiM0cUmgssJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c7b83695-dfa6-4041-8e0d-db1c9947170f",
+              "leftValue": "={{ $json.Notified }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        7296,
+        2576
+      ],
+      "id": "15b244e8-3fa2-4d24-8f4d-81331a316b21",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "id": "6b71b2f7-f51b-4622-ad96-e4f42b4d9dbe",
+      "name": "Merge Email and Slack Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        8192,
+        2576
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('Send Welcome Email to Employee').first().json.id }}",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              }
+            },
+            {
+              "id": "id-2",
+              "leftValue": "={{ $('Notify IT Team on Slack').last().json.ok }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "24fd26fb-fc62-4512-84cc-525ddb87d4d9",
+      "name": "Check Email and Slack Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        8416,
+        2576
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Employee Status Change Trigger": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Check If Status = Joined",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Status = Joined": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email to Employee",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify IT Team on Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email to Employee": {
+      "main": [
+        [
+          {
+            "node": "Merge Email and Slack Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify IT Team on Slack": {
+      "main": [
+        [
+          {
+            "node": "Merge Email and Slack Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Email and Slack Results": {
+      "main": [
+        [
+          {
+            "node": "Check Email and Slack Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Email and Slack Success": {
+      "main": [
+        [
+          {
+            "node": "Add Onboarding Checklist Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fallback Email to IT Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "fc3d277d-0e0d-4cd5-80bc-93ca241984cc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6e07f0cade65ae3b897c80688dbb4ced8b7ecdd9a4ffd6857ac2c42cfa06487"
+  },
+  "id": "wkXmdN9lap4r8SMw",
+  "tags": []
+}

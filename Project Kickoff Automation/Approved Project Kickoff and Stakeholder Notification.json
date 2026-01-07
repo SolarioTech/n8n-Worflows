@@ -1,0 +1,745 @@
+{
+  "name": "Approved Project Kickoff and Stakeholder Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1DXIOsvuJuO5sR9-G6EMhRrR-U8ssBapCyOli7Bb9izA",
+          "mode": "list",
+          "cachedResultName": "Project Kickoff Automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DXIOsvuJuO5sR9-G6EMhRrR-U8ssBapCyOli7Bb9izA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DXIOsvuJuO5sR9-G6EMhRrR-U8ssBapCyOli7Bb9izA/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "926d58e4-a8a4-46ed-b61d-51346cd1b3bc",
+      "name": "Project Approval Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -4832,
+        1472
+      ],
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "4qxKDFstxlLPVWj2",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "47a50211-a238-4c95-b921-1dca242720ad",
+              "name": "Project Name",
+              "value": "={{ $json['Project Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "788d2619-ed98-4d4e-a4c3-d1609d7043df",
+              "name": "Client Name",
+              "value": "={{ $json['Client Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "94ee8a06-f2e8-4add-a425-a6efba03a79a",
+              "name": "Status",
+              "value": "={{ $json.Status }}",
+              "type": "string"
+            },
+            {
+              "id": "fe8f7aeb-90c3-4e5c-adf3-546cad6a983c",
+              "name": "Date ",
+              "value": "={{ DateTime.fromMillis($json['Date ']).toFormat('dd/MM/yyyy') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "863fca75-ee8d-4077-834d-780c4e2fafeb",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4144,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1fb26b1b-92eb-4987-81f9-ebf7ca4d05ef",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "68cb7681-f1d0-459e-8ba7-fe84ca528093",
+      "name": "Validate Required Fields",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3296,
+        1472
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10YP6Z2VH9oO53L9V8DXyCjNt0xJXZ_yVzC98QgDvLOA",
+          "mode": "list",
+          "cachedResultName": "Project Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10YP6Z2VH9oO53L9V8DXyCjNt0xJXZ_yVzC98QgDvLOA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10YP6Z2VH9oO53L9V8DXyCjNt0xJXZ_yVzC98QgDvLOA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Client Name": "={{ $json['Client Name'] }}",
+            "Date": "={{ $json['Date '] }}",
+            "Status": "={{ $json.Status }}",
+            "Project Manager Name": "={{ $json['Project Manager Name'] }}",
+            "Active Project": "={{ $json['Active Project'] }}",
+            "Email": "={{ $json.Email }}",
+            "Project Name": "={{ $json['Project Name'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Client Name",
+              "displayName": "Client Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Project Manager Name",
+              "displayName": "Project Manager Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Active Project",
+              "displayName": "Active Project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Project Name",
+              "displayName": "Project Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1e7b8610-ed8c-48c3-8c74-61d8c0b79fea",
+      "name": "Create Project Record",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2976,
+        1296
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8TGTyiM0cUmgssJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=New Project Assignment: {{ $json['Project Name'] }}",
+        "message": "=<p>Hi {{ $json['Project Manager Name'] }},</p><p>You have been assigned as Project Manager for:</p><p><strong>Project:</strong> {{ $json['Project Name'] }}<br><strong>Client:</strong> {{ $json['Client Name'] }}<br><strong>Start Date:</strong> {{ $json.Date }} </p><p>Please review the project details and begin coordination.</p>",
+        "options": {}
+      },
+      "id": "d35101e2-9cd3-49a1-a4cd-5ff78cad02d1",
+      "name": "Notify PM",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -2592,
+        1184
+      ],
+      "webhookId": "7565de40-683d-4a56-9340-63dfc1bc0252",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nikhilsiwan77@gmail.com",
+        "subject": "=New Project Kickoff: {{ $json['Project Name'] }}",
+        "message": "=<p>Hi Dev Lead,</p><p>A new project has been approved:</p><p><strong>Project:</strong> {{ $json['Project Name'] }}<br><strong>Client:</strong> {{ $json['Client Name'] }}<br><strong>PM:</strong> {{ $json['Project Manager Name'] }}<br><strong>Start Date:</strong> {{ $json.Date }} </p><p>Please coordinate with the PM for technical requirements.</p>",
+        "options": {}
+      },
+      "id": "213f2ee6-235c-4768-aed9-30296daefa23",
+      "name": "Notify Dev Lead",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -2592,
+        1376
+      ],
+      "webhookId": "3666ed77-ee73-4a38-993c-6665efbd7e7c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "sainiankit8102001@gmail.com",
+        "subject": "=Welcome! Project Kickoff for {{ $json['Project Name'] }}",
+        "message": "=<p>Dear {{ $json['Client Name'] }},</p><p>We're excited to begin working on your project!</p><p><strong>Project Name:</strong> {{ $json['Project Name'] }}<br><strong>Project Manager:</strong> {{ $json['Project Manager Name'] }}<br><strong>Start Date:</strong> {{ $json.Date }} </p><p>Your PM will reach out shortly to schedule a kickoff meeting.</p><p>Best regards,<br>The Team</p>",
+        "options": {}
+      },
+      "id": "1f02e548-42e2-4352-a33d-c951a1f37694",
+      "name": "Send Client Kickoff Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -2592,
+        1568
+      ],
+      "webhookId": "69f13e1d-6531-4936-b536-50bbd0a2388d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "leadership@company.com",
+        "subject": "=Action Required: Missing PM Assignment for {{ $json['Project Name'] }}",
+        "message": "=<p>Alert: A project has been approved but is missing required information.</p><p><strong>Project:</strong> {{ $json['Project Name'] }}<br><strong>Client:</strong> {{ $json['Client Name'] }}<br><strong>Status:</strong> {{ $json.Status }}</p><p>Please assign a Project Manager to proceed with kickoff.</p>",
+        "options": {}
+      },
+      "id": "2f911892-174d-4a11-bdc5-7fc640c4a6da",
+      "name": "Notify Leadership - Missing PM",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -2928,
+        1584
+      ],
+      "webhookId": "3e4ec9ee-0221-4e20-b5e1-de82ff7fa21b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2c0424f5-eb64-4155-9874-0924f0d75538",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -4608,
+        1472
+      ],
+      "id": "a7841201-aaa6-4dea-bcf5-ab20166cf25c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1cyQwQ2Umf0azUNynCyq7kFhh85hPqdeBAXjvXcsw0Nc",
+          "mode": "list",
+          "cachedResultName": "Project Manager Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cyQwQ2Umf0azUNynCyq7kFhh85hPqdeBAXjvXcsw0Nc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cyQwQ2Umf0azUNynCyq7kFhh85hPqdeBAXjvXcsw0Nc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -4304,
+        1136
+      ],
+      "id": "76358b28-db7f-4926-8480-df7fd26505eb",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8TGTyiM0cUmgssJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "Active Project"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fc85e801-8ab5-44d7-8f85-4def48a143e2",
+      "name": "Sort PMs by Active Projects",
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        -4160,
+        1376
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "fd03fe5e-9cab-4793-bd40-d78d5a40a1a4",
+      "name": "Get PM with Least Projects",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -3936,
+        1376
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "32386321-a2d4-4417-8d15-19766c2f4bc4",
+      "name": "Combine PM with Trigger Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -3712,
+        1472
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a3e2b748-a6de-4b65-b152-6a6366f14fee",
+              "name": "Project Name",
+              "value": "={{ $json['Project Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "92f50051-5dba-47a3-92d2-d815be65d4d7",
+              "name": "Client Name",
+              "value": "={{ $json['Client Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "37c3dc63-7b27-4cdd-99f9-b11b017d5ca6",
+              "name": "Status",
+              "value": "={{ $json.Status }}",
+              "type": "string"
+            },
+            {
+              "id": "1bebd047-0174-4830-a88b-46df839228c0",
+              "name": "Date ",
+              "value": "={{ $json['Date '] }}",
+              "type": "string"
+            },
+            {
+              "id": "8fa20083-2166-43ae-a803-ed715602bfd6",
+              "name": "Project Manager Name",
+              "value": "={{ $json['Project Manager Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e18c64f2-6399-417d-b2e1-a032889a8946",
+              "name": "Active Project",
+              "value": "={{ $json['Active Project'] +  1}}",
+              "type": "number"
+            },
+            {
+              "id": "7a18f693-1e54-490c-a8fb-740781664c16",
+              "name": "Email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "cf8caf7a-bf84-43ef-86e0-89be9ec4c0d4",
+              "name": "row_number",
+              "value": "={{ $json.row_number }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "98baabf0-7f1d-4bc7-9d1e-22aca0c707a0",
+      "name": "Calculate New Active Project Count",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3488,
+        1472
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1cyQwQ2Umf0azUNynCyq7kFhh85hPqdeBAXjvXcsw0Nc"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Project Manager Name": "={{ $json['Project Manager Name'] }}",
+            "Active Project": "={{ $json['Active Project'] }}",
+            "Email": "={{ $json.Email }}",
+            "row_number": "={{ $json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Project Manager Name",
+              "displayName": "Project Manager Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Active Project",
+              "displayName": "Active Project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ff9234d5-2a53-4b55-bdde-33afa97555fe",
+      "name": "Update PM Active Project Count",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3248,
+        1744
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8TGTyiM0cUmgssJ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Project Approval Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Create Project Record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update PM Active Project Count",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Leadership - Missing PM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Project Record": {
+      "main": [
+        [
+          {
+            "node": "Notify PM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Dev Lead",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Client Kickoff Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Combine PM with Trigger Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Sort PMs by Active Projects",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort PMs by Active Projects": {
+      "main": [
+        [
+          {
+            "node": "Get PM with Least Projects",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get PM with Least Projects": {
+      "main": [
+        [
+          {
+            "node": "Combine PM with Trigger Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Combine PM with Trigger Data": {
+      "main": [
+        [
+          {
+            "node": "Calculate New Active Project Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate New Active Project Count": {
+      "main": [
+        [
+          {
+            "node": "Validate Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update PM Active Project Count": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "635bccdf-4029-4ba8-af6a-7016dbc74dee",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6e07f0cade65ae3b897c80688dbb4ced8b7ecdd9a4ffd6857ac2c42cfa06487"
+  },
+  "id": "HYlFgmhfHCsMTlgh",
+  "tags": []
+}

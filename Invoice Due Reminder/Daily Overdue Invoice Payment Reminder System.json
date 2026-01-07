@@ -1,0 +1,305 @@
+{
+  "name": "Daily Overdue Invoice Payment Reminder System",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "9794e310-3377-4659-b15d-93e25b0f0e3b",
+      "name": "Daily 9 AM Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -4080,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "accountManagerEmail",
+              "value": "manager@company.com",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "financeHeadEmail",
+              "value": "finance@company.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ccacc5d7-28bc-4869-81d1-d0e79dbf95e6",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3856,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bwTrW61HysgG4FO0kocZF6-zSjnkO8kLcwaRTY9Yz2A",
+          "mode": "list",
+          "cachedResultName": "Invoice Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bwTrW61HysgG4FO0kocZF6-zSjnkO8kLcwaRTY9Yz2A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bwTrW61HysgG4FO0kocZF6-zSjnkO8kLcwaRTY9Yz2A/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "a0694c4c-f1ae-4605-9cbd-a5f787123da7",
+      "name": "Get Invoice Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3632,
+        368
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8TGTyiM0cUmgssJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $input.item.json ?? {};\n\n// Get today's date (start of day)\nconst today = new Date();\ntoday.setHours(0, 0, 0, 0);\n\n// Read raw date strings (exact column names)\nconst dueDateString = item['Due Date'];\nconst invoiceDateString = item['Invoice Date '];\n\nlet daysOverdue = null;\nlet dueDateFormatted = null;\nlet invoiceDateFormatted = null;\n\n// -------- DUE DATE (MM/DD/YYYY) --------\nif (typeof dueDateString === 'string' && dueDateString.includes('/')) {\n  const parts = dueDateString.split('/');\n\n  if (parts.length === 3) {\n    const month = parseInt(parts[0], 10) - 1; // MM\n    const day = parseInt(parts[1], 10);       // DD\n    const year = parseInt(parts[2], 10);      // YYYY\n\n    const dueDate = new Date(year, month, day);\n\n    if (!isNaN(dueDate.getTime())) {\n      dueDate.setHours(0, 0, 0, 0);\n      const diff = today - dueDate;\n      daysOverdue = Math.floor(diff / (1000 * 60 * 60 * 24));\n\n      // Format MM/DD/YYYY\n      dueDateFormatted = `${String(month + 1).padStart(2, '0')}/${String(day).padStart(2, '0')}/${year}`;\n    }\n  }\n}\n\n// -------- INVOICE DATE (MM/DD/YYYY) --------\nif (typeof invoiceDateString === 'string' && invoiceDateString.includes('/')) {\n  const parts = invoiceDateString.split('/');\n\n  if (parts.length === 3) {\n    const month = parseInt(parts[0], 10) - 1;\n    const day = parseInt(parts[1], 10);\n    const year = parseInt(parts[2], 10);\n\n    const invoiceDate = new Date(year, month, day);\n\n    if (!isNaN(invoiceDate.getTime())) {\n      invoiceDateFormatted = `${String(month + 1).padStart(2, '0')}/${String(day).padStart(2, '0')}/${year}`;\n    }\n  }\n}\n\n// ✅ RETURN SINGLE OBJECT (correct for Run Once for Each Item)\nreturn {\n  json: {\n    ...item,\n    daysOverdue,\n    currentDate: today.toISOString().split('T')[0],\n    dueDateFormatted: dueDateFormatted || dueDateString,\n    invoiceDateFormatted: invoiceDateFormatted || invoiceDateString,\n    row_number: item.row_number ?? null\n  }\n};\n"
+      },
+      "id": "f2451a8c-d72d-48ef-9b4a-b0cae399778a",
+      "name": "Calculate Days Overdue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3408,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.daysOverdue }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b17c0a8d-e77a-4127-a0b7-280fbe8e1444",
+      "name": "Check If Overdue > 7 Days",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3184,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json['Client Email'] }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "642372ee-b128-4d44-87d8-9b345f58d0ae",
+      "name": "Check If Email Exists",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2960,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Client Email'] }}",
+        "subject": "Payment Reminder: Invoice Overdue",
+        "emailType": "text",
+        "message": "=Dear {{ $json['Client Name'] }},\n\nThis is a friendly reminder that your invoice is now overdue.\n\nInvoice Details:\n- Invoice Date: {{ $json.invoiceDateFormatted }}\n- Due Date: {{ $json.dueDateFormatted }}\n- Days Overdue: {{ $json.daysOverdue }}\n\nWe kindly request that you process the payment at your earliest convenience. If you have already made the payment, please disregard this message.\n\nIf you have any questions or concerns regarding this invoice, please don't hesitate to contact us.\n\nThank you for your prompt attention to this matter.\n\nBest regards,\nAccounts Receivable Team",
+        "options": {}
+      },
+      "id": "5deca9fd-4778-4bc6-9a96-5112132488c7",
+      "name": "Send Reminder to Client",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -2736,
+        272
+      ],
+      "webhookId": "9fda9d2d-9388-416e-a031-673878c1f5eb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').item.json.financeHeadEmail }}",
+        "subject": "Action Required: Missing Client Email for Overdue Invoice",
+        "emailType": "text",
+        "message": "=Dear Finance Head,\n\nThis is an automated alert regarding a missing client email address for an overdue invoice.\n\nInvoice Details:\n- Client Name: {{ $('Get Invoice Data').item.json['Client Name'] }}\n- Invoice Date: {{ $('Calculate Days Overdue').item.json.invoiceDateFormatted }}\n- Due Date: {{ $('Calculate Days Overdue').item.json.dueDateFormatted }}\n- Status: {{ $('Get Invoice Data').item.json.Status }}\n- Days Overdue: {{ $('Calculate Days Overdue').item.json.daysOverdue }}\n\nAction Required:\nPlease update the client contact information in the system to enable automated payment reminders.\n\nBest regards,\nAutomated Invoice System",
+        "options": {}
+      },
+      "id": "b1525633-b9f9-4f10-af6e-0d7140112b31",
+      "name": "Notify Finance Head - Missing Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -2736,
+        464
+      ],
+      "webhookId": "dededa6d-7518-4932-802e-460a82f49aa5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Daily 9 AM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Get Invoice Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Invoice Data": {
+      "main": [
+        [
+          {
+            "node": "Calculate Days Overdue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Days Overdue": {
+      "main": [
+        [
+          {
+            "node": "Check If Overdue > 7 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Overdue > 7 Days": {
+      "main": [
+        [
+          {
+            "node": "Check If Email Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Email Exists": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder to Client",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Finance Head - Missing Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Reminder to Client": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "df9b011c-d523-4eb9-9625-a655605f6ce0",
+  "meta": {
+    "instanceId": "a6e07f0cade65ae3b897c80688dbb4ced8b7ecdd9a4ffd6857ac2c42cfa06487"
+  },
+  "id": "hw6liYRc2jUmvNJC",
+  "tags": []
+}

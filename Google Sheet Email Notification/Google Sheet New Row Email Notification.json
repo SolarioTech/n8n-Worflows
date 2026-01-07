@@ -1,0 +1,225 @@
+{
+  "name": "Google Sheet New Row Email Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1FJ2urUYBoji2srxo8uF8pbJd2Brwwl28Ilz2XOcTlgs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1FJ2urUYBoji2srxo8uF8pbJd2Brwwl28Ilz2XOcTlgs/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "f011e52f-e448-4882-a43d-180ce2be831c",
+      "name": "New Row Added",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        704,
+        64
+      ],
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "4qxKDFstxlLPVWj2",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "hrEmail",
+              "value": "nikhilsiwan77@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "adminEmail",
+              "value": "voidman.nikk@gmail.com",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "0e1a2afe-0d60-4f71-951d-8c05c2627c9e",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "emailSubject",
+              "value": "New Request Added",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "emailBody",
+              "value": "={{ 'A new row has been added to the Google Sheet:\\n\\nName: ' + ($json.Name || 'N/A') + '\\nEmail: ' + ($json.Email || 'N/A') + '\\nRequest Type: ' + ($json['Request Type'] || 'N/A') + '\\nDate: ' + ($json.Date || 'N/A') + '\\n\\nPlease review this new entry.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "5468a330-596c-4840-9247-ed7d9632c1e5",
+      "name": "Map Row Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Workflow Configuration').item.json.hrEmail }}",
+        "subject": "={{ $json.emailSubject }}",
+        "message": "={{ $json.emailBody }}",
+        "options": {}
+      },
+      "id": "c5c55af2-1065-4d7a-a9c1-2862be53ce50",
+      "name": "Send Email to HR",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1360,
+        64
+      ],
+      "webhookId": "2725c004-7331-4acb-8961-6018afcf39f6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=voidman.nikk@gmail.com",
+        "subject": "ALERT: Email Notification Failed",
+        "message": "=The email notification to HR FAILED.\n\nWorkflow: {{$json.workflow.name}}\nFailed Node: {{$json.execution.error.node.name}}\nError Message: {{$json.execution.error.message}}\nExecution ID: {{$json.execution.id}}\nTime: {{new Date().toISOString()}}",
+        "options": {}
+      },
+      "id": "e40c6177-5e36-402f-8718-9b0e76d1f693",
+      "name": "Send Alert to Admin",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        288
+      ],
+      "webhookId": "96f35c06-9edf-424f-915d-17b84702a123",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H7g7BDYjBGFvV5G8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        912,
+        288
+      ],
+      "id": "4e1715b9-e81a-4f78-af02-d84f82732280",
+      "name": "HR Email Error Handler"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "New Row Added": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map Row Data": {
+      "main": [
+        [
+          {
+            "node": "Send Email to HR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Map Row Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to HR": {
+      "main": [
+        []
+      ]
+    },
+    "HR Email Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Send Alert to Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "dda27d03-b87c-4d69-85be-d642bbb6e8fa",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6e07f0cade65ae3b897c80688dbb4ced8b7ecdd9a4ffd6857ac2c42cfa06487"
+  },
+  "id": "q1H4zkmVrtYMww6x",
+  "tags": []
+}
